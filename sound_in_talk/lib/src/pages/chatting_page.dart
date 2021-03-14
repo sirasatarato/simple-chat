@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+// ignore: must_be_immutable
 class ChattingPage extends StatefulWidget {
+  IO.Socket channel;
+  String title;
+
+  ChattingPage(this.channel, this.title);
+
   @override
   _ChattingPageState createState() => _ChattingPageState();
 }
 
 class _ChattingPageState extends State<ChattingPage> {
-  final WebSocketChannel channel = IOWebSocketChannel.connect(Uri.parse('ws://localhost:5556'));
   TextEditingController _controller = TextEditingController();
-
   List<String> messages = [];
 
   @override
   void initState() {
-    channel.stream.listen((event) {
+    widget.channel.on('rchat', (data) {
+      print('rchat: $data');
       setState(() {
-        messages.insert(0, event);
+        messages.insert(0, data);
       });
     });
 
@@ -28,7 +32,7 @@ class _ChattingPageState extends State<ChattingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Single Room'),
+        title: Text(widget.title),
       ),
       body: SafeArea(
         child: Column(
@@ -73,7 +77,7 @@ class _ChattingPageState extends State<ChattingPage> {
     if (_controller.text.isEmpty) return;
 
     setState(() {
-      channel.sink.add(_controller.text);
+      widget.channel.emit('schat', _controller.text);
       _controller.clear();
     });
   }
@@ -103,7 +107,7 @@ class _ChattingPageState extends State<ChattingPage> {
 
   @override
   void dispose() {
-    channel.sink.close();
+    widget.channel.onDisconnect((_) => print('disconnect'));
     super.dispose();
   }
 }
