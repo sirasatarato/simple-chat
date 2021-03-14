@@ -12,13 +12,13 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   http: ^0.13.0
-  logging: ^1.0.0
   flutter_sound: ^7.7.0+1
   permission_handler: ^5.1.0+2
+  get: ^3.26.0
 
   sip_ua: ^0.3.5
   flutter_webrtc: ^0.5.8
-  web_socket_channel: ^1.2.0
+  socket_io_client: ^0.9.12
 
 dev_dependencies:
   flutter_test:
