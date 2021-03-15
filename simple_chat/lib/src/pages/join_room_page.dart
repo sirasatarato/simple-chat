@@ -10,11 +10,14 @@ import 'package:sound_in_talk/src/room_data.dart';
 // ignore: must_be_immutable
 class JoinRoomPage extends StatelessWidget {
   TextEditingController _controller = TextEditingController();
-  IO.Socket channel = IO.io('https://hseoy-simple-chat-server.herokuapp.com/');
+  IO.Socket socket = IO.io(
+    'https://hseoy-simple-chat-server.herokuapp.com/',
+    OptionBuilder().setTransports(['websocket']).build(),
+  );
 
   @override
   Widget build(BuildContext context) {
-    channel.onConnect((_) => print('open'));
+    socket.onConnect((_) => print('open'));
 
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +43,7 @@ class JoinRoomPage extends StatelessWidget {
     if (information.isEmpty && information.contains(',')) return;
 
     var data = information.split(',');
-    channel.emit('login', RoomData(data[0], data[1]));
-    Get.to(ChattingPage(channel, data[1]));
+    socket.emit('login', RoomData(data[0], data[1]).toJson());
+    Get.to(ChattingPage(socket, data[1]));
   }
 }

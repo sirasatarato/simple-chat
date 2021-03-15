@@ -5,4 +5,9 @@ class RoomData {
   String room;
 
   RoomData(this.name, this.room);
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'room': room,
+      };
 }
